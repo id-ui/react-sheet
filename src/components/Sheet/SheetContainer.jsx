@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import _ from 'lodash';
 import Sheet from './Sheet';
 
@@ -10,9 +10,7 @@ function SheetContainer({
 }) {
   const [isOpen, setOpen] = useState(initialIsOpen);
 
-  const isOpenControlled = useMemo(() => !_.isUndefined(providedIsOpen), [
-    providedIsOpen,
-  ]);
+  const isOpenControlled = !_.isUndefined(providedIsOpen);
 
   const handleChangeOpen = useCallback(
     (value) => {

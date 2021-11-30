@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ResizeHandle as ResizeHandleComponent } from './styled';
 
 function ResizeHandle({ onChange, axis }) {
@@ -6,23 +6,20 @@ function ResizeHandle({ onChange, axis }) {
 
   const [isResizing, setResizing] = useState(false);
 
-  const handleStartResizing = useCallback(
-    (e) => {
-      if (e.button !== 0) {
-        return;
-      }
+  const handleStartResizing = (e) => {
+    if (e.button !== 0) {
+      return;
+    }
 
-      e.stopPropagation();
-      e.nativeEvent.stopImmediatePropagation();
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
 
-      setResizing(true);
-      lastMousePositionRef.current = e[`client${axis}`];
-    },
-    [axis]
-  );
+    setResizing(true);
+    lastMousePositionRef.current = e[`client${axis}`];
+  };
 
-  const handleMouseMove = useCallback(
-    (e) => {
+  useEffect(() => {
+    const handleMouseMove = (e) => {
       if (isResizing) {
         e.stopPropagation();
 
@@ -30,12 +27,16 @@ function ResizeHandle({ onChange, axis }) {
         onChange(currentMousePosition - lastMousePositionRef.current);
         lastMousePositionRef.current = currentMousePosition;
       }
-    },
-    [axis, isResizing, onChange]
-  );
+    };
 
-  const handleMouseUp = useCallback(
-    (e) => {
+    document.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, [axis, isResizing, onChange]);
+
+  useEffect(() => {
+    const handleMouseUp = (e) => {
       if (!isResizing) {
         return;
       }
@@ -43,23 +44,13 @@ function ResizeHandle({ onChange, axis }) {
       e.stopPropagation();
 
       setResizing(false);
-    },
-    [isResizing]
-  );
-
-  useEffect(() => {
-    document.addEventListener('mousemove', handleMouseMove);
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
     };
-  }, [handleMouseMove]);
 
-  useEffect(() => {
     document.addEventListener('mouseup', handleMouseUp);
     return () => {
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [handleMouseUp]);
+  }, [isResizing]);
 
   return (
     <ResizeHandleComponent onMouseDown={handleStartResizing} axis={axis} />

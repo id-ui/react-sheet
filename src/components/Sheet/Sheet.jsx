@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo, useCallback, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { createPortal } from 'react-dom';
 import { AnimatePresence } from 'framer-motion';
@@ -100,10 +100,8 @@ function Sheet({
     },
   };
 
-  const transformedContent = useMemo(
-    () => (typeof content === 'function' ? content({ close }) : content),
-    [content, close]
-  );
+  const transformedContent =
+    typeof content === 'function' ? content({ close }) : content;
 
   const popoverContentAnimated = (
     <AnimatePresence initial={null}>
